@@ -1,46 +1,41 @@
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useId } from "react";
-import { nanoid } from "nanoid";
-import * as Yup from "yup";
-import { BsPhone, BsPerson } from "react-icons/bs";
-import css from './ContactForm.module.css'
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useId } from 'react';
 
+import * as Yup from 'yup';
+import { BsPhone, BsPerson } from 'react-icons/bs';
+import css from './ContactForm.module.css';
+
+import { useDispatch } from 'react-redux';
+import { initialValues } from '../../redux/constants';
+import { addContact } from '../../redux/contactsSlice';
 
 const FeedbackSchema = Yup.object().shape({
   name: Yup.string()
-    .min(3, "Too Short!")
-    .max(50, "Too Long!")
-    .required("Required"),
+    .min(3, 'Too Short!')
+    .max(50, 'Too Long!')
+    .required('Required'),
   number: Yup.string()
-    .matches(/^\d{3}-\d{2}-\d{2}$/, "Invalid phone number format")
-    .required("Required"),
+    .matches(/^\d{3}-\d{2}-\d{2}$/, 'Invalid phone number format')
+    .required('Required'),
 });
 
-const initialValues = {
-    name: "",
-    number: "",
-  };
+const ContactForm = () => {
+  const dispatch = useDispatch();
+  const nameId = useId();
+  const numberId = useId();
 
-const ContactForm = ({ onAdd }) => {
-
-const nameId = useId();
-const numberId = useId();
-
-const handleSubmit = (values, actions) => {
-    onAdd({
-      id: nanoid(),
-      ...values,
-    });
+  const handleSubmit = (values, actions) => {
+    dispatch(addContact(values));
     actions.resetForm();
   };
 
-
-    return (
-        <Formik
-            initialValues={initialValues}
-            onSubmit={handleSubmit}
-            validationSchema={FeedbackSchema}>
-           {({ errors, touched }) => (
+  return (
+    <Formik
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      validationSchema={FeedbackSchema}
+    >
+      {({ errors, touched }) => (
         <Form className={css.containerForm}>
           <label className={css.formLabel} htmlFor={nameId}>
             Name
@@ -91,7 +86,7 @@ const handleSubmit = (values, actions) => {
           </button>
         </Form>
       )}
-        </Formik>
-)
-}
+    </Formik>
+  );
+};
 export default ContactForm;
